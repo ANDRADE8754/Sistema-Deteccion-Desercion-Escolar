@@ -1,1 +1,1 @@
-# Sistema-Detecci-n-de-Deserci-n-Escolar
+# Sistema-Deteccion-de-Desercion-Escolar
