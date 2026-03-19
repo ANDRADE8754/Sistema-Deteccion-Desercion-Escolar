@@ -1,0 +1,102 @@
+.cursos-page {
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 { margin: 0; font-size: 24px; color: #2c3e50; }
+  }
+}
+
+.formulario-card {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+
+  h2 { margin: 0 0 16px; font-size: 18px; }
+}
+
+.campo {
+  margin-bottom: 14px;
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #495057;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 15px;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border-color: #2c3e50;
+      box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+    }
+  }
+}
+
+.curso-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-color: #2c3e50;
+  }
+
+  &__info {
+    h3 { margin: 0 0 4px; font-size: 16px; }
+    p  { margin: 0; font-size: 14px; color: #6c757d; }
+  }
+
+  &__acciones {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__flecha { font-size: 14px; color: #2c3e50; }
+}
+
+.estado-vacio {
+  text-align: center;
+  padding: 48px;
+  color: #6c757d;
+  p { margin: 4px 0; }
+}
+
+// Botones reutilizables
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.85; }
+
+  &--primario { background: #2c3e50; color: white; }
+  &--peligro  { background: #dc3545; color: white; }
+  &--pequeno  { padding: 4px 10px; font-size: 13px; }
+}
