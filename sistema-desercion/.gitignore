@@ -40,3 +40,15 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Capacitor / Native Platforms
+/android
+/ios
+/electron
+capacitor.config.json.orig
+
+# SQlite local overrides
+*.db
+*.sqlite
+*.sqlite-journal
+

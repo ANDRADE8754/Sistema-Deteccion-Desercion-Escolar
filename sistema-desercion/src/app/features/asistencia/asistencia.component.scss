@@ -1,0 +1,116 @@
+.fecha-selector {
+  background: white;
+  border: 1px solid #d1fae5;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  &__label { font-size: 0.875rem; font-weight: 700; color: #374151; white-space: nowrap; }
+}
+.fecha-tabs {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.fecha-tab {
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  border: 1.5px solid #d1d5db;
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #6b7280;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.15s ease;
+  &:hover { border-color: #059669; color: #059669; }
+  &.active { background: #059669; color: white; border-color: #059669; }
+}
+.hoy-chip {
+  background: rgba(255,255,255,0.3);
+  border-radius: 4px;
+  padding: 0 0.3rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.fecha-input-wrap input[type="date"] {
+  padding: 0.4rem 0.75rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 9px;
+  font-size: 0.85rem;
+  color: #374151;
+  font-family: inherit;
+  cursor: pointer;
+  &:focus { outline: none; border-color: #059669; }
+}
+.resumen-asistencia {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.res-chip {
+  flex: 1;
+  min-width: 100px;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  border: 1.5px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  span { font-size: 1.4rem; font-weight: 800; }
+  &--presente   { background: #dcfce7; color: #14532d;  border-color: #bbf7d0; }
+  &--ausente    { background: #fee2e2; color: #7f1d1d;  border-color: #fecaca; }
+  &--justificado{ background: #dbeafe; color: #1e3a8a;  border-color: #93c5fd; }
+  &--tardanza   { background: #fef3c7; color: #78350f;  border-color: #fcd34d; }
+}
+.avatar-mini {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border: 2px solid #6ee7b7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #065f46;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.estudiante-nombre-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.asistencia-toggle {
+  button {
+    min-width: 110px;
+    opacity: 0.5;
+    transition: all 0.15s ease;
+    &.activo { opacity: 1; font-weight: 700; }
+    &:not(.activo):hover { opacity: 0.8; }
+  }
+}
+.guardando-row { opacity: 0.7; }
+.guardado-info {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  margin-top: 0.75rem;
+}

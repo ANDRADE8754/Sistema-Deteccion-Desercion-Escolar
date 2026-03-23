@@ -1,16 +1,12 @@
-﻿
 <div class="cursos-page">
-
   <div class="page-header">
     <h1>Cursos registrados</h1>
     <button class="btn btn--primario" (click)="mostrarFormulario = !mostrarFormulario; errorNombre = ''">
       {{ mostrarFormulario ? 'Cancelar' : '+ Nuevo curso' }}
     </button>
   </div>
-
   <div class="formulario-card" *ngIf="mostrarFormulario">
     <h2>Nuevo curso</h2>
-
     <div class="campo">
       <label for="nombre">Nombre del curso *</label>
       <input
@@ -23,7 +19,6 @@
       />
       <span class="error-text" *ngIf="errorNombre">{{ errorNombre }}</span>
     </div>
-
     <div class="campo">
       <label for="descripcion">Descripción</label>
       <input
@@ -33,10 +28,8 @@
         placeholder="Ej: Escuela Rural Nro 45"
       />
     </div>
-
     <button class="btn btn--primario" (click)="guardarCurso()" [disabled]="!!errorNombre || !nuevoCurso.nombre.trim()">Guardar curso</button>
   </div>
-
   <div *ngIf="cursos.length > 0; else sinCursos">
     <div
       class="curso-card"
@@ -58,16 +51,13 @@
       </div>
     </div>
   </div>
-
   <ng-template #sinCursos>
     <div class="estado-vacio">
       <p>No hay cursos registrados.</p>
       <p>Crea el primero con el botón de arriba.</p>
     </div>
   </ng-template>
-
 </div>
-
 <app-confirm-modal
   [isOpen]="showModal"
   titulo="Eliminar curso"
@@ -76,4 +66,3 @@
   (confirmar)="confirmarEliminar()"
   (cancelar)="cerrarModal()"
 ></app-confirm-modal>
-
