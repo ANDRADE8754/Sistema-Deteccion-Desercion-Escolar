@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Curso } from '../models/curso.model';
+import { Estudiante, NivelRiesgo } from '../models/estudiante.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StorageService {
   private readonly cursosKey = 'sistema-desercion:cursos';
+  private readonly estudiantesKey = 'sistema-desercion:estudiantes';
 
   getCursos(): Curso[] {
     const storage = this.getStorage();
@@ -39,6 +41,30 @@ export class StorageService {
   deleteCurso(id: string): void {
     const cursos = this.getCursos().filter((curso) => curso.id !== id);
     this.setCursos(cursos);
+    this.deleteEstudiantesByCurso(id);
+  }
+
+  getEstudiantesByCurso(cursoId: string): Estudiante[] {
+    return this.getEstudiantes().filter((estudiante) => estudiante.cursoId === cursoId);
+  }
+
+  saveEstudiante(estudiante: Estudiante): void {
+    const estudiantes = this.getEstudiantes();
+    estudiantes.push(estudiante);
+    this.setEstudiantes(estudiantes);
+  }
+
+  updateEstudiante(estudianteActualizado: Estudiante): void {
+    const estudiantes = this.getEstudiantes().map((estudiante) =>
+      estudiante.id === estudianteActualizado.id ? estudianteActualizado : estudiante
+    );
+
+    this.setEstudiantes(estudiantes);
+  }
+
+  deleteEstudiante(id: string): void {
+    const estudiantes = this.getEstudiantes().filter((estudiante) => estudiante.id !== id);
+    this.setEstudiantes(estudiantes);
   }
 
   generateId(): string {
@@ -56,6 +82,43 @@ export class StorageService {
     }
 
     storage.setItem(this.cursosKey, JSON.stringify(cursos));
+  }
+
+  private getEstudiantes(): Estudiante[] {
+    const storage = this.getStorage();
+    if (!storage) {
+      return [];
+    }
+
+    const raw = storage.getItem(this.estudiantesKey);
+    if (!raw) {
+      return [];
+    }
+
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      if (!Array.isArray(parsed)) {
+        return [];
+      }
+
+      return parsed.filter(this.isEstudiante);
+    } catch {
+      return [];
+    }
+  }
+
+  private setEstudiantes(estudiantes: Estudiante[]): void {
+    const storage = this.getStorage();
+    if (!storage) {
+      return;
+    }
+
+    storage.setItem(this.estudiantesKey, JSON.stringify(estudiantes));
+  }
+
+  private deleteEstudiantesByCurso(cursoId: string): void {
+    const estudiantes = this.getEstudiantes().filter((estudiante) => estudiante.cursoId !== cursoId);
+    this.setEstudiantes(estudiantes);
   }
 
   private getStorage(): Storage | null {
@@ -76,4 +139,28 @@ export class StorageService {
       typeof curso.creadoEn === 'number'
     );
   };
+
+  private isEstudiante = (value: unknown): value is Estudiante => {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+
+    const estudiante = value as Partial<Estudiante>;
+
+    return (
+      typeof estudiante.id === 'string' &&
+      typeof estudiante.cursoId === 'string' &&
+      typeof estudiante.nombres === 'string' &&
+      typeof estudiante.apellidos === 'string' &&
+      typeof estudiante.creadoEn === 'number' &&
+      typeof estudiante.vecesAusente === 'number' &&
+      typeof estudiante.vecesSinTarea === 'number' &&
+      typeof estudiante.vecesBajoRendimiento === 'number' &&
+      this.isNivelRiesgo(estudiante.nivelRiesgo)
+    );
+  };
+
+  private isNivelRiesgo(value: unknown): value is NivelRiesgo {
+    return value === 'bajo' || value === 'medio' || value === 'alto';
+  }
 }

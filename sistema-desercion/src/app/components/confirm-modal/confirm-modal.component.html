@@ -1,0 +1,15 @@
+﻿
+<div class="modal-overlay" *ngIf="isOpen">
+  <div class="modal-dialog">
+    <div class="modal-icon">
+      ⚠️
+    </div>
+    <h3 class="modal-title">{{ titulo }}</h3>
+    <p class="modal-message">{{ mensaje }}</p>
+    <div class="modal-actions">
+      <button class="btn btn--secundario" (click)="onCancelar()">Cancelar</button>
+      <button class="btn btn--peligro" (click)="onConfirmar()">{{ textoConfirmar }}</button>
+    </div>
+  </div>
+</div>
+

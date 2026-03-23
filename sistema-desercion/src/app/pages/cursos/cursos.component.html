@@ -1,33 +1,27 @@
+﻿
 <div class="cursos-page">
 
   <div class="page-header">
     <h1>Cursos registrados</h1>
-    <button class="btn btn--primario" (click)="mostrarFormulario = !mostrarFormulario">
+    <button class="btn btn--primario" (click)="mostrarFormulario = !mostrarFormulario; errorNombre = ''">
       {{ mostrarFormulario ? 'Cancelar' : '+ Nuevo curso' }}
     </button>
   </div>
 
-  <!--
-    *ngIf muestra u oculta este bloque según el valor de mostrarFormulario.
-    Angular elimina el elemento del DOM cuando es false (no solo lo oculta con CSS).
-  -->
   <div class="formulario-card" *ngIf="mostrarFormulario">
     <h2>Nuevo curso</h2>
 
     <div class="campo">
       <label for="nombre">Nombre del curso *</label>
-      <!--
-        [(ngModel)] es two-way data binding:
-        - [ngModel] muestra el valor de nuevoCurso.nombre en el input
-        - (ngModel) actualiza nuevoCurso.nombre cuando el usuario escribe
-        Es el equivalente a value + onChange en React.
-      -->
       <input
         id="nombre"
         type="text"
         [(ngModel)]="nuevoCurso.nombre"
+        (input)="filtrarAlfanumerico('nombre')"
+        [ngClass]="{'input-error': errorNombre}"
         placeholder="Ej: 4to Grado A"
       />
+      <span class="error-text" *ngIf="errorNombre">{{ errorNombre }}</span>
     </div>
 
     <div class="campo">
@@ -40,17 +34,10 @@
       />
     </div>
 
-    <!-- (click) escucha el evento click y llama al método guardarCurso() -->
-    <button class="btn btn--primario" (click)="guardarCurso()">Guardar curso</button>
+    <button class="btn btn--primario" (click)="guardarCurso()" [disabled]="!!errorNombre || !nuevoCurso.nombre.trim()">Guardar curso</button>
   </div>
 
-  <!-- *ngIf con else: si no hay cursos muestra el bloque #sinCursos -->
   <div *ngIf="cursos.length > 0; else sinCursos">
-    <!--
-      *ngFor itera el array cursos y crea un div por cada elemento.
-      trackBy es una optimización: Angular usa el id para identificar
-      qué elementos cambiaron, evitando re-renderizar toda la lista.
-    -->
     <div
       class="curso-card"
       *ngFor="let curso of cursos; trackBy: trackById"
@@ -64,7 +51,7 @@
         <span class="curso-card__flecha">Ver estudiantes →</span>
         <button
           class="btn btn--peligro btn--pequeno"
-          (click)="eliminarCurso(curso.id, $event)"
+          (click)="pedirEliminar(curso.id, $event)"
         >
           Eliminar
         </button>
@@ -72,7 +59,6 @@
     </div>
   </div>
 
-  <!-- Template de referencia para el else del *ngIf -->
   <ng-template #sinCursos>
     <div class="estado-vacio">
       <p>No hay cursos registrados.</p>
@@ -81,3 +67,13 @@
   </ng-template>
 
 </div>
+
+<app-confirm-modal
+  [isOpen]="showModal"
+  titulo="Eliminar curso"
+  mensaje="¿Estás seguro de eliminar este curso y todos sus estudiantes? Esta acción no se puede deshacer."
+  textoConfirmar="Sí, eliminar"
+  (confirmar)="confirmarEliminar()"
+  (cancelar)="cerrarModal()"
+></app-confirm-modal>
+

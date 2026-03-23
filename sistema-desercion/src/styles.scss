@@ -1,1 +1,187 @@
-/* You can add global styles to this file, and also import other style files */
+﻿
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f5f5f4; /* Tono marfil/papel cálido en lugar de gris frío */
+  color: #292524; /* Texto marrón oscuro para menor agresividad que el negro puro */
+  margin: 0;
+  padding: 0; /* Padding movido al app-layout central */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Keyframes */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Shared Cards & Layouts */
+.formulario-card {
+  background: white;
+  border: 1px solid #e7e5e4;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  animation: slideDown 0.3s ease-out;
+
+  h2 {
+    margin: 0 0 1.25rem;
+    font-size: 1.35rem;
+    color: #44403c;
+    font-weight: 700;
+  }
+}
+
+.campo {
+  margin-bottom: 1.25rem;
+
+  label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #57534e;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    border: 1.5px solid #d6d3d1;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #292524;
+    background-color: #fafaf9;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: #a8a29e;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #059669; /* Verde esmeralda */
+      background-color: white;
+      box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.15);
+    }
+    
+    &.input-error {
+      border-color: #ef4444;
+      background-color: #fef2f2;
+      &:focus {
+        box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+      }
+    }
+  }
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 0.8rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.5rem;
+  display: block;
+  animation: slideDown 0.2s ease-out;
+  font-weight: 500;
+}
+
+/* Empty State */
+.estado-vacio {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: repeating-linear-gradient(45deg, #fafaf9, #fafaf9 10px, white 10px, white 20px);
+  border: 2px dashed #d6d3d1;
+  border-radius: 12px;
+  color: #78716c;
+  margin-top: 1rem;
+  animation: fadeIn 0.5s ease-out;
+
+  p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+
+    &:first-child {
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: #44403c;
+    }
+  }
+}
+
+/* Shared Buttons - Verde Naturaleza y Cálidos */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.625rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 0.5rem;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  &--primario {
+    background: #059669; /* Verde esmeralda suave, inspira crecimiento y calma */
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.25);
+
+    &:hover:not(:disabled) {
+      background: #047857;
+      box-shadow: 0 6px 8px -1px rgba(5, 150, 105, 0.35);
+    }
+  }
+
+  &--secundario {
+    background: white;
+    color: #57534e;
+    border: 1px solid #d6d3d1;
+    
+    &:hover:not(:disabled) {
+      background: #fafaf9;
+      color: #292524;
+      border-color: #a8a29e;
+    }
+  }
+
+  &--peligro {
+    background: white;
+    color: #df2a2a;
+    border: 1px solid #fecaca;
+
+    &:hover:not(:disabled) {
+      background: #fef2f2;
+      color: #b91c1c;
+      border-color: #fca5a5;
+    }
+  }
+
+  &--pequeno {
+    padding: 0.35rem 0.85rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+  }
+}
+

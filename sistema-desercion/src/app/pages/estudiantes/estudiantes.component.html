@@ -1,1 +1,112 @@
-<p>estudiantes works!</p>
+﻿
+<div class="estudiantes-page">
+
+  <div class="page-header">
+    <button class="btn btn--secundario" (click)="volver()">← Volver</button>
+    <div>
+      <h1>{{ curso?.nombre }}</h1>
+      <p class="subtitulo">{{ curso?.descripcion }}</p>
+    </div>
+    <button class="btn btn--primario" (click)="mostrarFormulario = !mostrarFormulario; errorNombres = ''; errorApellidos = ''">
+      {{ mostrarFormulario ? 'Cancelar' : '+ Nuevo estudiante' }}
+    </button>
+  </div>
+
+  <div class="formulario-card" *ngIf="mostrarFormulario">
+    <h2>Registrar estudiante</h2>
+    <div class="campos-fila">
+      <div class="campo">
+        <label>Nombres *</label>
+        <input 
+          type="text" 
+          [(ngModel)]="nuevoEstudiante.nombres" 
+          (input)="filtrarLetras('nombres')"
+          [ngClass]="{'input-error': errorNombres}"
+          placeholder="Ej: Juan Carlos" />
+        <span class="error-text" *ngIf="errorNombres">{{ errorNombres }}</span>
+      </div>
+      <div class="campo">
+        <label>Apellidos</label>
+        <input 
+          type="text" 
+          [(ngModel)]="nuevoEstudiante.apellidos" 
+          (input)="filtrarLetras('apellidos')"
+          [ngClass]="{'input-error': errorApellidos}"
+          placeholder="Ej: Pérez Rodríguez" />
+        <span class="error-text" *ngIf="errorApellidos">{{ errorApellidos }}</span>
+      </div>
+    </div>
+    <button class="btn btn--primario" (click)="guardarEstudiante()" [disabled]="!!errorNombres || !!errorApellidos || !nuevoEstudiante.nombres.trim()">Guardar</button>
+  </div>
+
+  <div *ngIf="estudiantes.length > 0; else sinEstudiantes">
+    <div class="estudiante-card" *ngFor="let est of estudiantes; trackBy: trackById">
+
+      <div class="estudiante-card__header">
+        <div class="estudiante-card__nombre">
+          <strong>{{ est.apellidos ? est.apellidos + ', ' : '' }}{{ est.nombres }}</strong>
+          <app-riesgo-badge [nivel]="est.nivelRiesgo"></app-riesgo-badge>
+        </div>
+        <button class="btn btn--peligro btn--pequeno" (click)="pedirEliminar(est.id)">
+          Eliminar
+        </button>
+      </div>
+
+      <p class="descripcion-riesgo">{{ getDescripcionRiesgo(est) }}</p>
+
+      <div class="checklist">
+        <div class="checklist__item">
+          <span class="checklist__label">Inasistencias</span>
+          <div class="checklist__controles">
+            <button (click)="decrementar(est, 'vecesAusente')">−</button>
+            <span class="checklist__valor" [class.valor--alto]="est.vecesAusente >= 3">
+              {{ est.vecesAusente }}
+            </span>
+            <button (click)="incrementar(est, 'vecesAusente')">+</button>
+          </div>
+        </div>
+
+        <div class="checklist__item">
+          <span class="checklist__label">Sin tarea</span>
+          <div class="checklist__controles">
+            <button (click)="decrementar(est, 'vecesSinTarea')">−</button>
+            <span class="checklist__valor" [class.valor--alto]="est.vecesSinTarea >= 3">
+              {{ est.vecesSinTarea }}
+            </span>
+            <button (click)="incrementar(est, 'vecesSinTarea')">+</button>
+          </div>
+        </div>
+
+        <div class="checklist__item">
+          <span class="checklist__label">Bajo rendimiento</span>
+          <div class="checklist__controles">
+            <button (click)="decrementar(est, 'vecesBajoRendimiento')">−</button>
+            <span class="checklist__valor" [class.valor--alto]="est.vecesBajoRendimiento >= 2">
+              {{ est.vecesBajoRendimiento }}
+            </span>
+            <button (click)="incrementar(est, 'vecesBajoRendimiento')">+</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <ng-template #sinEstudiantes>
+    <div class="estado-vacio">
+      <p>No hay estudiantes en este curso.</p>
+      <p>Registra el primero con el botón de arriba.</p>
+    </div>
+  </ng-template>
+
+</div>
+
+<app-confirm-modal
+  [isOpen]="showModal"
+  titulo="Eliminar estudiante"
+  mensaje="¿Estás seguro de eliminar este estudiante? Esta acción no se puede deshacer."
+  textoConfirmar="Sí, eliminar"
+  (confirmar)="confirmarEliminar()"
+  (cancelar)="cerrarModal()"
+></app-confirm-modal>
+

@@ -17,17 +17,19 @@ import { CommonModule } from '@angular/common';
   `,
   styles: [`
     .badge {
-      display: inline-block;
-      padding: 4px 12px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
       border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 0.75rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
-    .badge--bajo   { background: #d4edda; color: #155724; }
-    .badge--medio  { background: #fff3cd; color: #856404; }
-    .badge--alto   { background: #f8d7da; color: #721c24; }
+    .badge--bajo   { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+    .badge--medio  { background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+    .badge--alto   { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
   `]
 })
 export class RiesgoBadgeComponent {
