@@ -1,0 +1,110 @@
+<div class="page-header">
+  <div>
+    <h2 style="margin:0;font-size:1.25rem;font-weight:800;color:#14532d;display:flex;align-items:center;gap:0.5rem;"><span class="material-symbols-rounded">insights</span> Dashboard del Curso</h2>
+    <p class="subtitulo">Resumen de riesgo, rendimiento y asistencia</p>
+  </div>
+  <button class="btn btn--secundario" (click)="cargar()">
+    <span class="material-symbols-rounded" [class.spin]="cargando()" style="vertical-align: middle;">refresh</span> Actualizar
+  </button>
+</div>
+@if (cargando()) { <div class="loading-spinner">Calculando estadísticas...</div> }
+@if (!cargando()) {
+  @if (estados().length === 0) {
+    <div class="estado-vacio">
+      <div class="vacio-icon"><span class="material-symbols-rounded" style="font-size: inherit;">bar_chart</span></div>
+      <p>Sin datos para mostrar</p>
+      <p>Agrega estudiantes, registra asistencia y calificaciones primero</p>
+    </div>
+  }
+  @if (estados().length > 0) {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">{{ stats().total }}</div>
+        <div class="stat-label">Total Estudiantes</div>
+      </div>
+      <div class="stat-card stat-card--alto">
+        <div class="stat-value">{{ stats().riesgoAlto }}</div>
+        <div class="stat-label">Riesgo Alto <span class="material-symbols-rounded" style="font-size: 1rem; vertical-align: bottom;">error</span></div>
+      </div>
+      <div class="stat-card stat-card--medio">
+        <div class="stat-value">{{ stats().riesgoMedio }}</div>
+        <div class="stat-label">Riesgo Medio <span class="material-symbols-rounded" style="font-size: 1rem; vertical-align: bottom;">warning</span></div>
+      </div>
+      <div class="stat-card stat-card--bajo">
+        <div class="stat-value">{{ stats().riesgoBajo }}</div>
+        <div class="stat-label">Riesgo Bajo <span class="material-symbols-rounded" style="font-size: 1rem; vertical-align: bottom;">check_circle</span></div>
+      </div>
+      <div class="stat-card stat-card--neutro">
+        <div class="stat-value">{{ stats().promedioCurso | number:'1.1-1' }}</div>
+        <div class="stat-label">Promedio General</div>
+      </div>
+    </div>
+    @if (stats().mejorEstudiante || stats().peorEstudiante) {
+      <div class="destacados-grid">
+        @if (stats().mejorEstudiante) {
+          <div class="destacado-card destacado-card--mejor">
+            <div class="destacado-icon"><span class="material-symbols-rounded">workspace_premium</span></div>
+            <div>
+              <div class="destacado-label">Mejor Estudiante</div>
+              <div class="destacado-nombre">{{ getNombre(stats().mejorEstudiante!.estudiante) }}</div>
+              <div class="destacado-val">Promedio: {{ stats().mejorEstudiante!.riesgo?.detalles.promedio | number:'1.1-1' }}</div>
+            </div>
+          </div>
+        }
+        @if (stats().peorEstudiante) {
+          <div class="destacado-card destacado-card--peor">
+            <div class="destacado-icon"><span class="material-symbols-rounded">warning</span></div>
+            <div>
+              <div class="destacado-label">Necesita Apoyo</div>
+              <div class="destacado-nombre">{{ getNombre(stats().peorEstudiante!.estudiante) }}</div>
+              <div class="destacado-val">Promedio: {{ stats().peorEstudiante!.riesgo?.detalles.promedio | number:'1.1-1' }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+    <div class="charts-grid">
+      <div class="card">
+        <h3>Distribución de Riesgo</h3>
+        <canvas #chartAsistencia></canvas>
+      </div>
+      <div class="card">
+        <h3>Promedio por Estudiante</h3>
+        <canvas #chartRendimiento></canvas>
+      </div>
+    </div>
+    <div class="tabla-wrapper" style="margin-top:1.5rem">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Faltas</th>
+            <th>Promedio</th>
+            <th>Tareas sin entregar</th>
+            <th>Nivel de Riesgo</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of estados(); track e.estudiante.id) {
+            <tr>
+              <td>{{ getNombre(e.estudiante) }}</td>
+              <td>{{ e.riesgo?.detalles.totalFaltas ?? '—' }}</td>
+              <td>{{ e.riesgo?.detalles.promedio | number:'1.1-1' }}</td>
+              <td>{{ e.riesgo?.detalles.tareasNoEntregadas ?? '—' }}</td>
+              <td>
+                @if (e.riesgo) {
+                  <span class="badge"
+                        [class.badge--bajo]="e.riesgo.nivel === 'bajo'"
+                        [class.badge--medio]="e.riesgo.nivel === 'medio'"
+                        [class.badge--alto]="e.riesgo.nivel === 'alto'">
+                    {{ e.riesgo.nivel | titlecase }}
+                  </span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

@@ -1,0 +1,118 @@
+<div class="dashboard-hero">
+  <div class="hero-content">
+    <div class="hero-icon"><span class="material-symbols-rounded" style="font-size: inherit;">dashboard</span></div>
+    <div>
+      <h1 style="display: flex; align-items: center; gap: 0.5rem;">Dashboard General</h1>
+      <p>Resumen de todos tus cursos y detección de riesgo</p>
+    </div>
+  </div>
+  <button class="btn btn--secundario" (click)="cargar()" [disabled]="cargando()">
+    <span class="material-symbols-rounded" [class.spin]="cargando()">refresh</span> Actualizar
+  </button>
+</div>
+@if (cargando()) {
+  <div class="loading-spinner">Calculando estadísticas globales...</div>
+}
+@if (!cargando() && global()) {
+  @if (global()!.totalCursos === 0) {
+    <div class="estado-vacio">
+      <div class="vacio-icon"><span class="material-symbols-rounded" style="font-size: inherit;">library_books</span></div>
+      <p>Sin cursos creados</p>
+      <a routerLink="/cursos" class="btn btn--primario"><span class="material-symbols-rounded">add</span> Crear Primer Curso</a>
+    </div>
+  }
+  @if (global()!.totalCursos > 0) {
+    <div class="stats-grid">
+      <div class="stat-card stat-card--neutro">
+        <div class="stat-value">{{ global()!.totalCursos }}</div>
+        <div class="stat-label">Cursos Activos</div>
+      </div>
+      <div class="stat-card stat-card--neutro">
+        <div class="stat-value">{{ global()!.totalEstudiantes }}</div>
+        <div class="stat-label">Total Estudiantes</div>
+      </div>
+      <div class="stat-card stat-card--alto">
+        <div class="stat-value">{{ global()!.totalRiesgoAlto }}</div>
+        <div class="stat-label"><span class="material-symbols-rounded">error</span> Riesgo Alto</div>
+      </div>
+      <div class="stat-card stat-card--medio">
+        <div class="stat-value">{{ global()!.totalRiesgoMedio }}</div>
+        <div class="stat-label"><span class="material-symbols-rounded">warning</span> Riesgo Medio</div>
+      </div>
+      <div class="stat-card stat-card--bajo">
+        <div class="stat-value">{{ global()!.totalRiesgoBajo }}</div>
+        <div class="stat-label"><span class="material-symbols-rounded">check_circle</span> Riesgo Bajo</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ global()!.promedioGeneral | number:'1.1-1' }}</div>
+        <div class="stat-label">Promedio General</div>
+      </div>
+      <div class="stat-card stat-card--neutro">
+        <div class="stat-value">{{ global()!.edadPromedio | number:'1.0-0' }}</div>
+        <div class="stat-label">Edad Promedio</div>
+      </div>
+    </div>
+    <div class="charts-global">
+      <div class="card">
+        <h3 style="display: flex; align-items: center; gap: 0.4rem; color: #0f172a; margin-top: 0; margin-bottom: 1.5rem;"><span class="material-symbols-rounded" style="color: #64748b;">track_changes</span> Distribución de Riesgo Global</h3>
+        <canvas #chartGlobal></canvas>
+      </div>
+      <div class="card">
+        <h3 style="display: flex; align-items: center; gap: 0.4rem; color: #0f172a; margin-top: 0; margin-bottom: 1.5rem;"><span class="material-symbols-rounded" style="color: #64748b;">groups</span> Distribución por Género</h3>
+        <canvas #chartGenero></canvas>
+        <div class="genero-info">
+          <span class="genero-chip genero--h"><span class="material-symbols-rounded" style="font-size: 1.1rem">boy</span> {{ global()!.totalHombres }} Hombres</span>
+          <span class="genero-chip genero--m"><span class="material-symbols-rounded" style="font-size: 1.1rem">girl</span> {{ global()!.totalMujeres }} Mujeres</span>
+        </div>
+      </div>
+    </div>
+    <h2 class="section-title"><span class="material-symbols-rounded">library_books</span> Resumen por Curso</h2>
+    <div class="cursos-resumen-grid">
+      @for (r of resumenCursos(); track r.curso.id) {
+        <div class="resumen-curso-card">
+          <div class="rc-header">
+            <div>
+              <h3>{{ r.curso.nombre }}</h3>
+              <p><span class="material-symbols-rounded" style="font-size: 1rem; color: #64748b; vertical-align: text-bottom;">account_balance</span> {{ r.curso.escuela }} · Paralelo {{ r.curso.paralelo }}</p>
+            </div>
+            <a [routerLink]="['/cursos', r.curso.id, 'dashboard']" class="btn btn--secundario btn--pequeno">
+              Ver →
+            </a>
+          </div>
+          <div class="rc-stats">
+            <div class="rc-stat">
+              <span>{{ r.totalEstudiantes }}</span>
+              <label>Est.</label>
+            </div>
+            <div class="rc-stat rc-stat--alto">
+              <span>{{ r.riesgoAlto }}</span>
+              <label><span class="material-symbols-rounded" style="font-size: 0.9rem;">error</span> Alto</label>
+            </div>
+            <div class="rc-stat rc-stat--medio">
+              <span>{{ r.riesgoMedio }}</span>
+              <label><span class="material-symbols-rounded" style="font-size: 0.9rem;">warning</span> Medio</label>
+            </div>
+            <div class="rc-stat rc-stat--bajo">
+              <span>{{ r.riesgoBajo }}</span>
+              <label><span class="material-symbols-rounded" style="font-size: 0.9rem;">check_circle</span> Bajo</label>
+            </div>
+            <div class="rc-stat">
+              <span>{{ r.promedio | number:'1.1-1' }}</span>
+              <label>Promedio</label>
+            </div>
+          </div>
+          @if (r.totalEstudiantes > 0) {
+            <div class="riesgo-bar">
+              <div class="riesgo-bar__fill riesgo-bar__fill--bajo"
+                   [style.width.%]="(r.riesgoBajo / r.totalEstudiantes) * 100"></div>
+              <div class="riesgo-bar__fill riesgo-bar__fill--medio"
+                   [style.width.%]="(r.riesgoMedio / r.totalEstudiantes) * 100"></div>
+              <div class="riesgo-bar__fill riesgo-bar__fill--alto"
+                   [style.width.%]="(r.riesgoAlto / r.totalEstudiantes) * 100"></div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+}

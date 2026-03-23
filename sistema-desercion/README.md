@@ -1,27 +1,40 @@
-# SistemaDesercion
+# Sistema de Detección Temprana de Riesgo de Deserción Escolar (Yura)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Sistema integral Offline-First, diseñado específicamente para zonas rurales y escuelas unidocentes. Construido en Angular 17+ y motor de base de datos Capacitor SQLite.
 
-## Development server
+## Características Principales
+- **100% Offline:** Arquitectura WebAssembly y SQLite nativo garantizan el funcionamiento total sin conexión a Internet.
+- **Gestión Completa:** Estudiantes, Cursos, Asistencia Diaria y Calificaciones integradas en un modelo relacional.
+- **Dashboard Estadístico:** Analítica de riesgo de deserción en tiempo real mediante heurísticas de rendimiento y faltas.
+- **Responsive Design:** Optimizado estrictamente para Móvil, Tablet y Escritorio.
+- **UI Profesional:** Estilos personalizados, modales asíncronos y sistema de notificaciones no-bloqueantes.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Requisitos del Sistema
+- [Node.js](https://nodejs.org/) (v20 o superior recomendado)
+- NPM o Yarn
 
-## Code scaffolding
+## Guía de Instalación (Entorno Web/Pruebas)
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. **Clonar e instalar dependencias:**
+   \`\`\`bash
+   npm install --legacy-peer-deps
+   \`\`\`
 
-## Build
+2. **Ejecutar el servidor de desarrollo:**
+   \`\`\`bash
+   npx ng serve
+   \`\`\`
+   Abre \`http://localhost:4200/\` en tu navegador. 
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Instalación mediante Docker (Servidor Interno)
 
-## Running unit tests
+Si deseas hostear la versión Web del sistema (Offline-First en caché) dentro de una red de la escuela física sin necesidad de Node:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+1. Ejecuta Docker Compose:
+   \`\`\`bash
+   docker-compose up -d --build
+   \`\`\`
+2. Accede al sistema a través de \`http://<IP_DE_LA_MAQUINA>:8080/\`
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Guía de Empaquetado Nativo
+Consulta el archivo \`CAPACITOR_GUIDE.md\` para las instrucciones paso a paso sobre cómo compilar este código en aplicaciones instalables para **Android (.apk)** y **Escritorio (.exe)**.

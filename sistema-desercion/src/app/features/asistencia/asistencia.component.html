@@ -1,0 +1,106 @@
+<div class="page-header">
+  <div>
+    <h2 style="margin:0; font-size:1.25rem; font-weight:800; color:#14532d; display: flex; align-items: center; gap: 0.5rem;"><span class="material-symbols-rounded">fact_check</span> Control de Asistencia</h2>
+    <p class="subtitulo">Registra la asistencia diaria del curso</p>
+  </div>
+  <button class="btn btn--primario" (click)="marcarTodosPresentes()" [disabled]="filas().length === 0">
+    <span class="material-symbols-rounded">done_all</span> Marcar Todos Presentes
+  </button>
+</div>
+<div class="fecha-selector">
+  <div class="fecha-selector__label"><span class="material-symbols-rounded" style="vertical-align: middle; font-size: 1.25rem;">calendar_month</span> Fecha de clase:</div>
+  <div class="fecha-tabs">
+    @for (f of fechas(); track f) {
+      <button
+        class="fecha-tab"
+        [class.active]="f === fechaSel()"
+        (click)="cambiarFecha(f)">
+        {{ f }}
+        @if (f === fechaHoy) { <span class="hoy-chip">Hoy</span> }
+      </button>
+    }
+  </div>
+  <div class="fecha-input-wrap">
+    <input type="date"
+           [value]="fechaSel()"
+           [max]="fechaHoy"
+           (change)="cambiarFecha($any($event.target).value)" />
+  </div>
+</div>
+@if (!cargando() && filas().length > 0) {
+  <div class="resumen-asistencia">
+    <div class="res-chip res-chip--presente">
+      <span>{{ resumen().presentes }}</span> Presentes
+    </div>
+    <div class="res-chip res-chip--ausente">
+      <span>{{ resumen().ausentes }}</span> Ausentes
+    </div>
+    <div class="res-chip res-chip--justificado">
+      <span>{{ resumen().justificados }}</span> Justificados
+    </div>
+    <div class="res-chip res-chip--tardanza">
+      <span>{{ resumen().tardanzas }}</span> Tardanzas
+    </div>
+  </div>
+}
+@if (cargando()) {
+  <div class="loading-spinner">Cargando asistencia...</div>
+}
+@if (!cargando()) {
+  @if (filas().length === 0) {
+    <div class="estado-vacio">
+      <div class="vacio-icon"><span class="material-symbols-rounded" style="font-size: inherit;">fact_check</span></div>
+      <p>Sin estudiantes en este curso</p>
+      <p>Agrega estudiantes primero en la pestaña "Estudiantes"</p>
+    </div>
+  }
+  @if (filas().length > 0) {
+    <div class="tabla-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th colspan="4">Estado de Asistencia</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (fila of filas(); track fila.estudiante.id; let i = $index) {
+            <tr [class.guardando-row]="fila.guardando">
+              <td>
+                <div class="estudiante-nombre-mini">
+                  <div class="avatar-mini">{{ fila.estudiante.nombres[0] }}{{ fila.estudiante.apellidos[0] }}</div>
+                  {{ getNombreCompleto(fila.estudiante) }}
+                </div>
+              </td>
+              <td colspan="4">
+                <div class="asistencia-toggle">
+                  @for (estado of estados; track estado) {
+                    <button
+                      [class]="estado"
+                      [class.activo]="fila.estado === estado"
+                      (click)="setEstado(i, estado)"
+                      [disabled]="fila.guardando"
+                      style="display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+                      @if (fila.guardando && fila.estado === estado) { 
+                        <span class="material-symbols-rounded" style="font-size: 1.1rem; animation: spin 1s infinite linear;">hourglass_empty</span> 
+                      } @else {
+                        @if (estado === 'presente') { <span class="material-symbols-rounded" style="font-size: 1.1rem;">check_circle</span> }
+                        @if (estado === 'ausente') { <span class="material-symbols-rounded" style="font-size: 1.1rem;">cancel</span> }
+                        @if (estado === 'justificado') { <span class="material-symbols-rounded" style="font-size: 1.1rem;">info</span> }
+                        @if (estado === 'tardanza') { <span class="material-symbols-rounded" style="font-size: 1.1rem;">schedule</span> }
+                      }
+                      {{ etiquetaEstado[estado] }}
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="guardado-info" style="display: flex; align-items: center; gap: 0.4rem; justify-content: flex-end; color: #64748b; font-size: 0.85rem; font-weight: 500; margin-top: 1rem;">
+      <span class="material-symbols-rounded" style="font-size: 1.1rem; color: #059669;">cloud_done</span> Los cambios se guardan automáticamente
+    </p>
+  }
+}
