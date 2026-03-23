@@ -1,0 +1,119 @@
+.actividades-chips {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.act-chip {
+  background: white;
+  border: 1.5px solid #d1fae5;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 150px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #14532d;
+  box-shadow: 0 1px 3px rgba(5,150,105,0.08);
+  &__meta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  &__actions {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+  }
+}
+.act-tipo {
+  font-size: 0.7rem;
+  background: #f0fdf4;
+  color: #059669;
+  border: 1px solid #d1fae5;
+  border-radius: 5px;
+  padding: 0.1rem 0.4rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.act-pond {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-weight: 700;
+}
+.tabla-notas {
+  min-width: 600px;
+}
+.col-estudiante {
+  min-width: 180px;
+  position: sticky;
+  left: 0;
+  background: inherit;
+  z-index: 1;
+}
+.col-nota {
+  text-align: center;
+  min-width: 110px;
+}
+.actividad-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.75rem;
+}
+.actividad-nombre {
+  font-weight: 700;
+  color: #14532d;
+}
+.actividad-fecha {
+  font-size: 0.68rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+.nota-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  position: relative;
+}
+.guardando-ico {
+  font-size: 0.75rem;
+  animation: pulse 1s ease-in-out infinite;
+}
+.error-nota {
+  font-size: 0.68rem;
+  color: #dc2626;
+  white-space: nowrap;
+}
+.est-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.avatar-mini {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  border: 2px solid #6ee7b7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #065f46;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+.guardado-info {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  margin-top: 0.75rem;
+}

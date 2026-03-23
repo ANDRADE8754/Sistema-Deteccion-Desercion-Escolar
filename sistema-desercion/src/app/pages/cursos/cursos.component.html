@@ -1,1 +1,68 @@
-<p>cursos works!</p>
+<div class="cursos-page">
+  <div class="page-header">
+    <h1>Cursos registrados</h1>
+    <button class="btn btn--primario" (click)="mostrarFormulario = !mostrarFormulario; errorNombre = ''">
+      {{ mostrarFormulario ? 'Cancelar' : '+ Nuevo curso' }}
+    </button>
+  </div>
+  <div class="formulario-card" *ngIf="mostrarFormulario">
+    <h2>Nuevo curso</h2>
+    <div class="campo">
+      <label for="nombre">Nombre del curso *</label>
+      <input
+        id="nombre"
+        type="text"
+        [(ngModel)]="nuevoCurso.nombre"
+        (input)="filtrarAlfanumerico('nombre')"
+        [ngClass]="{'input-error': errorNombre}"
+        placeholder="Ej: 4to Grado A"
+      />
+      <span class="error-text" *ngIf="errorNombre">{{ errorNombre }}</span>
+    </div>
+    <div class="campo">
+      <label for="descripcion">Descripción</label>
+      <input
+        id="descripcion"
+        type="text"
+        [(ngModel)]="nuevoCurso.descripcion"
+        placeholder="Ej: Escuela Rural Nro 45"
+      />
+    </div>
+    <button class="btn btn--primario" (click)="guardarCurso()" [disabled]="!!errorNombre || !nuevoCurso.nombre.trim()">Guardar curso</button>
+  </div>
+  <div *ngIf="cursos.length > 0; else sinCursos">
+    <div
+      class="curso-card"
+      *ngFor="let curso of cursos; trackBy: trackById"
+      (click)="verEstudiantes(curso.id)"
+    >
+      <div class="curso-card__info">
+        <h3>{{ curso.nombre }}</h3>
+        <p>{{ curso.descripcion }}</p>
+      </div>
+      <div class="curso-card__acciones">
+        <span class="curso-card__flecha">Ver estudiantes →</span>
+        <button
+          class="btn btn--peligro btn--pequeno"
+          (click)="pedirEliminar(curso.id, $event)"
+        >
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+  <ng-template #sinCursos>
+    <div class="estado-vacio">
+      <p>No hay cursos registrados.</p>
+      <p>Crea el primero con el botón de arriba.</p>
+    </div>
+  </ng-template>
+</div>
+<app-confirm-modal
+  [isOpen]="showModal"
+  titulo="Eliminar curso"
+  mensaje="¿Estás seguro de eliminar este curso y todos sus estudiantes? Esta acción no se puede deshacer."
+  textoConfirmar="Sí, eliminar"
+  (confirmar)="confirmarEliminar()"
+  (cancelar)="cerrarModal()"
+></app-confirm-modal>

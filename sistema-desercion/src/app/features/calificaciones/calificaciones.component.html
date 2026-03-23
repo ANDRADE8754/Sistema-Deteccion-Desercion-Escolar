@@ -1,0 +1,185 @@
+<div class="page-header">
+  <div>
+    <h2 style="margin:0; font-size:1.25rem; font-weight:800; color:#14532d; display: flex; align-items: center; gap: 0.5rem;"><span class="material-symbols-rounded">assignment</span> Actividades y Calificaciones</h2>
+    <p class="subtitulo">{{ actividades().length }} actividad(es) registrada(s)</p>
+  </div>
+  <button class="btn btn--primario" (click)="abrirCrearActividad()"><span class="material-symbols-rounded">add</span> Nueva Actividad</button>
+</div>
+@if (cargando()) { <div class="loading-spinner">Cargando calificaciones...</div> }
+@if (!cargando()) {
+  @if (actividades().length === 0) {
+    <div class="estado-vacio">
+      <div class="vacio-icon"><span class="material-symbols-rounded" style="font-size: inherit;">assignment</span></div>
+      <p>Sin actividades registradas</p>
+      <p>Crea tareas, exámenes o actividades de participación</p>
+    </div>
+  }
+  @if (actividades().length > 0 && filas().length === 0) {
+    <div class="estado-vacio">
+      <div class="vacio-icon"><span class="material-symbols-rounded" style="font-size: inherit;">group_off</span></div>
+      <p>Sin estudiantes en el curso</p>
+    </div>
+  }
+  @if (actividades().length > 0 && filas().length > 0) {
+    <div class="actividades-chips">
+      @for (a of actividades(); track a.id) {
+        <div class="act-chip">
+          <span style="display: flex; align-items: center; gap: 0.35rem;"><span class="material-symbols-rounded" style="font-size: 1.1rem;">{{ iconoTipo[a.tipo] }}</span> {{ a.nombre }}</span>
+          <div class="act-chip__meta">
+            <span class="act-tipo">{{ a.tipo }}</span>
+            <span class="act-pond">{{ a.ponderacion }}%</span>
+          </div>
+          <div class="act-chip__actions">
+            <button class="btn btn--secundario btn--pequeno" (click)="abrirEditarActividad(a)"><span class="material-symbols-rounded">edit</span></button>
+            <button class="btn btn--peligro btn--pequeno" (click)="abrirEliminarActividad(a)"><span class="material-symbols-rounded">delete</span></button>
+          </div>
+        </div>
+      }
+    </div>
+    <div class="tabla-wrapper">
+      <table class="tabla-notas">
+        <thead>
+          <tr>
+            <th class="col-estudiante">Estudiante</th>
+            @for (a of actividades(); track a.id) {
+              <th class="col-nota">
+                <div class="actividad-header">
+                  <span><span class="material-symbols-rounded" style="font-size: 1.2rem; vertical-align: bottom;">{{ iconoTipo[a.tipo] }}</span></span>
+                  <span class="actividad-nombre">{{ a.nombre }}</span>
+                  <span class="actividad-fecha">{{ a.fecha }}</span>
+                </div>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (fila of filas(); track fila.estudiante.id; let fi = $index) {
+            <tr>
+              <td class="col-estudiante">
+                <div class="est-mini">
+                  <div class="avatar-mini">{{ fila.estudiante.nombres[0] }}{{ fila.estudiante.apellidos[0] }}</div>
+                  {{ getNombreCompleto(fila.estudiante) }}
+                </div>
+              </td>
+              @for (a of actividades(); track a.id) {
+                <td class="col-nota">
+                  <div class="nota-cell">
+                    <input
+                      type="number"
+                      class="nota-input"
+                      [class.no-entregada]="getNota(fila, a.id) === null"
+                      [class.nota-baja]="getNota(fila, a.id) !== null && getNota(fila, a.id)! < 7"
+                      [value]="getInput(fila, a.id)"
+                      [disabled]="isGuardando(fila, a.id)"
+                      min="0" [max]="a.notaMaxima" step="0.1"
+                      placeholder="—"
+                      (input)="onInputChange(fi, a.id, $any($event.target).value)"
+                      (blur)="guardarNota(fi, a.id)"
+                      (keydown)="onInputKeydown($event, fi, a.id)" />
+                    @if (isGuardando(fila, a.id)) {
+                      <span class="guardando-ico"><span class="material-symbols-rounded" style="font-size: 1rem; animation: spin 1s infinite linear;">hourglass_empty</span></span>
+                    }
+                    @if (getError(fila, a.id)) {
+                      <span class="error-nota">{{ getError(fila, a.id) }}</span>
+                    }
+                  </div>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="guardado-info" style="display: flex; align-items: center; gap: 0.4rem; justify-content: flex-end; color: #64748b; font-size: 0.85rem; font-weight: 500; margin-top: 1rem;">
+      <span class="material-symbols-rounded" style="font-size: 1.1rem; color: #eab308;">lightbulb</span> Presiona Enter o Tab para guardar. Deja vacío para "no entregado".
+    </p>
+  }
+}
+@if (modalEstado() === 'crear' || modalEstado() === 'editar') {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h2>
+            <span class="material-symbols-rounded">{{ modalEstado() === 'crear' ? 'add_circle' : 'edit' }}</span>
+            {{ modalEstado() === 'crear' ? 'Nueva Actividad' : 'Editar Actividad' }}
+          </h2>
+          <p>Define los parámetros de la actividad</p>
+        </div>
+        <button class="modal__close" (click)="cerrarModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="campo">
+          <label>Nombre *</label>
+          <input type="text" [(ngModel)]="form.nombre" [class.input-error]="erroresForm.nombre"
+                 (keydown)="filtrarNombreActividad($event)"
+                 (input)="sanitizarNombreActividad()"
+                 maxlength="60"
+                 autocomplete="off"
+                 placeholder="Ej: Tarea Capítulo 3" />
+          @if (erroresForm.nombre) { <span class="error-text">{{ erroresForm.nombre }}</span> }
+        </div>
+        <div class="form-row">
+          <div class="campo">
+            <label>Tipo</label>
+            <select [(ngModel)]="form.tipo">
+              @for (t of tipos; track t) {
+                <option [value]="t">{{ t | titlecase }}</option>
+              }
+            </select>
+          </div>
+          <div class="campo">
+            <label>Fecha</label>
+            <input type="date" [(ngModel)]="form.fecha" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="campo">
+            <label>Ponderación (%) *</label>
+            <input type="number" [(ngModel)]="form.ponderacion"
+                   [class.input-error]="erroresForm.ponderacion"
+                   min="1" max="100" placeholder="Ej: 10" />
+            @if (erroresForm.ponderacion) { <span class="error-text">{{ erroresForm.ponderacion }}</span> }
+          </div>
+          <div class="campo">
+            <label>Nota Máxima</label>
+            <input type="number" [(ngModel)]="form.notaMaxima"
+                   [class.input-error]="erroresForm.notaMaxima"
+                   min="1" max="10" placeholder="10" />
+            @if (erroresForm.notaMaxima) { <span class="error-text">{{ erroresForm.notaMaxima }}</span> }
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secundario" (click)="cerrarModal()" [disabled]="guardandoModal()">Cancelar</button>
+        <button class="btn btn--primario" (click)="guardarActividad()" [disabled]="guardandoModal()">
+          <span class="material-symbols-rounded" *ngIf="!guardandoModal()">check</span>
+          {{ guardandoModal() ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+@if (modalEstado() === 'eliminar') {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal modal--sm" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h2 style="color:#dc2626"><span class="material-symbols-rounded">delete</span> Eliminar Actividad</h2>
+          <p>Se eliminarán también todas las notas de esta actividad</p>
+        </div>
+        <button class="modal__close" (click)="cerrarModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <p>¿Eliminar la actividad <strong>{{ actividadSel()?.nombre }}</strong>?</p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secundario" (click)="cerrarModal()" [disabled]="guardandoModal()">Cancelar</button>
+        <button class="btn btn--peligro" (click)="eliminarActividad()" [disabled]="guardandoModal()">
+          <span class="material-symbols-rounded" *ngIf="!guardandoModal()">delete</span>
+          {{ guardandoModal() ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

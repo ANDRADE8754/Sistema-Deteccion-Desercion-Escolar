@@ -1,0 +1,259 @@
+<div class="page-header">
+  <div>
+    <h2 style="margin:0; font-size:1.25rem; font-weight:800; color:#14532d; display: flex; align-items: center; gap: 0.5rem;">
+      <span class="material-symbols-rounded">groups</span> Estudiantes del Curso
+    </h2>
+    <p class="subtitulo">{{ estudiantes().length }} estudiante(s) registrado(s)</p>
+  </div>
+  <button class="btn btn--primario" (click)="abrirCrear()">
+    <span class="material-symbols-rounded">person_add</span> Agregar Estudiante
+  </button>
+</div>
+@if (cargando()) {
+  <div class="loading-spinner">Cargando estudiantes...</div>
+}
+@if (!cargando()) {
+  @if (estudiantes().length === 0) {
+    <div class="estado-vacio">
+      <div class="vacio-icon"><span class="material-symbols-rounded" style="font-size: inherit;">group_off</span></div>
+      <p>Sin estudiantes registrados</p>
+      <p>Agrega el primer estudiante al curso</p>
+    </div>
+  }
+  @if (estudiantes().length > 0) {
+    <div class="tabla-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Edad</th>
+            <th>Género</th>
+            <th>Teléfono</th>
+            <th>Riesgo</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (e of estudiantes(); track e.id) {
+            <tr>
+              <td>
+                <div class="estudiante-nombre">
+                  <div class="avatar">{{ e.nombres[0] }}{{ e.apellidos[0] }}</div>
+                  <div>
+                    <strong>{{ getNombreCompleto(e) }}</strong>
+                    @if (e.observaciones) {
+                      <div class="obs-text">{{ e.observaciones }}</div>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>{{ e.edad }} años</td>
+              <td>
+                @if (e.genero === 'M') { <span class="material-symbols-rounded" style="vertical-align: middle; color: #3b82f6;">boy</span> Masculino }
+                @if (e.genero === 'F') { <span class="material-symbols-rounded" style="vertical-align: middle; color: #ec4899;">girl</span> Femenino }
+              </td>
+              <td>{{ e.telefonoFamiliar || '—' }}</td>
+              <td>
+                @if (e.cargandoRiesgo) {
+                  <span class="badge-cargando">...</span>
+                }
+                @if (!e.cargandoRiesgo && e.riesgo) {
+                  <span class="badge"
+                        [class.badge--bajo]="e.riesgo.nivel === 'bajo'"
+                        [class.badge--medio]="e.riesgo.nivel === 'medio'"
+                        [class.badge--alto]="e.riesgo.nivel === 'alto'"
+                        (click)="verRiesgo(e)"
+                        style="cursor:pointer">
+                    {{ e.riesgo.nivel | titlecase }}
+                  </span>
+                }
+                @if (!e.cargandoRiesgo && !e.riesgo) {
+                  <span class="badge badge--bajo">Sin datos</span>
+                }
+              </td>
+              <td>
+                <div class="acciones">
+                  <button class="btn btn--secundario btn--pequeno" (click)="abrirEditar(e)" title="Editar">
+                    <span class="material-symbols-rounded">edit</span>
+                  </button>
+                  <button class="btn btn--peligro btn--pequeno" (click)="abrirEliminar(e)" title="Eliminar">
+                    <span class="material-symbols-rounded">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}
+@if (modalEstado() === 'crear' || modalEstado() === 'editar') {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h2>
+            <span class="material-symbols-rounded">{{ modalEstado() === 'crear' ? 'person_add' : 'edit' }}</span>
+            {{ modalEstado() === 'crear' ? 'Nuevo Estudiante' : 'Editar Estudiante' }}
+          </h2>
+          <p>Datos del estudiante del curso</p>
+        </div>
+        <button class="modal__close" (click)="cerrarModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="form-row">
+          <div class="campo">
+            <label>Nombres *</label>
+            <input type="text" [(ngModel)]="form.nombres"
+                   [class.input-error]="errores.nombres"
+                   (keydown)="filtrarNombre($event)"
+                   (input)="sanitizarNombre('nombres')"
+                   maxlength="50"
+                   autocomplete="off"
+                   placeholder="Ej: Juan Carlos" />
+            @if (errores.nombres) { <span class="error-text">{{ errores.nombres }}</span> }
+          </div>
+          <div class="campo">
+            <label>Apellidos *</label>
+            <input type="text" [(ngModel)]="form.apellidos"
+                   [class.input-error]="errores.apellidos"
+                   (keydown)="filtrarNombre($event)"
+                   (input)="sanitizarNombre('apellidos')"
+                   maxlength="50"
+                   autocomplete="off"
+                   placeholder="Ej: García López" />
+            @if (errores.apellidos) { <span class="error-text">{{ errores.apellidos }}</span> }
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="campo">
+            <label>Edad *</label>
+            <input type="number" [(ngModel)]="form.edad"
+                   [class.input-error]="errores.edad"
+                   (keydown)="filtrarEdad($event)"
+                   (input)="sanitizarEdad()"
+                   min="3" max="20" step="1"
+                   autocomplete="off"
+                   placeholder="Ej: 12" />
+            @if (errores.edad) { <span class="error-text">{{ errores.edad }}</span> }
+          </div>
+          <div class="campo">
+            <label>Género</label>
+            <select [(ngModel)]="form.genero">
+              <option value="M">Masculino</option>
+              <option value="F">Femenino</option>
+            </select>
+          </div>
+        </div>
+        <div class="campo">
+          <label>Teléfono Familiar (opcional)</label>
+          <input type="tel" [(ngModel)]="form.telefonoFamiliar"
+                 [class.input-error]="errores.telefonoFamiliar"
+                 (keydown)="filtrarTelefono($event)"
+                 (input)="sanitizarTelefono()"
+                 maxlength="10"
+                 autocomplete="off"
+                 placeholder="Ej: 0987654321" />
+          @if (errores.telefonoFamiliar) { <span class="error-text">{{ errores.telefonoFamiliar }}</span> }
+        </div>
+        <div class="campo">
+          <label>Observaciones (opcional)</label>
+          <textarea [(ngModel)]="form.observaciones"
+                    (keydown)="filtrarObservaciones($event)"
+                    (input)="sanitizarObservaciones()"
+                    maxlength="300"
+                    placeholder="Notas sobre el estudiante, situación familiar, etc..."></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secundario" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+        <button class="btn btn--primario" (click)="guardar()" [disabled]="guardando()">
+          <span class="material-symbols-rounded" *ngIf="!guardando()">check</span>
+          {{ guardando() ? 'Guardando...' : (modalEstado() === 'crear' ? 'Agregar' : 'Guardar') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+@if (modalEstado() === 'verRiesgo' && estudianteSel()?.riesgo) {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h2><span class="material-symbols-rounded">analytics</span> Análisis de Riesgo</h2>
+          <p>{{ getNombreCompleto(estudianteSel()!) }}</p>
+        </div>
+        <button class="modal__close" (click)="cerrarModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="riesgo-nivel-chip"
+             [class.badge--bajo]="estudianteSel()!.riesgo!.nivel === 'bajo'"
+             [class.badge--medio]="estudianteSel()!.riesgo!.nivel === 'medio'"
+             [class.badge--alto]="estudianteSel()!.riesgo!.nivel === 'alto'">
+          <span class="riesgo-icono">
+            @if (estudianteSel()!.riesgo!.nivel === 'bajo')  { <span class="material-symbols-rounded">check_circle</span> }
+            @if (estudianteSel()!.riesgo!.nivel === 'medio') { <span class="material-symbols-rounded">warning</span> }
+            @if (estudianteSel()!.riesgo!.nivel === 'alto')  { <span class="material-symbols-rounded">error</span> }
+          </span>
+          Riesgo {{ estudianteSel()!.riesgo!.nivel | titlecase }}
+        </div>
+        <p class="riesgo-mensaje">{{ estudianteSel()!.riesgo!.mensaje }}</p>
+        <div class="riesgo-detalles">
+          <div class="detalle-item">
+            <span class="detalle-icon"><span class="material-symbols-rounded">assignment_late</span></span>
+            <div>
+              <div class="detalle-label">Faltas efectivas</div>
+              <div class="detalle-val">{{ estudianteSel()!.riesgo!.detalles.totalFaltas }}</div>
+            </div>
+          </div>
+          <div class="detalle-item">
+            <span class="detalle-icon"><span class="material-symbols-rounded">school</span></span>
+            <div>
+              <div class="detalle-label">Promedio</div>
+              <div class="detalle-val">{{ estudianteSel()!.riesgo!.detalles.promedio | number:'1.1-1' }}</div>
+            </div>
+          </div>
+          <div class="detalle-item">
+            <span class="detalle-icon"><span class="material-symbols-rounded">collections_bookmark</span></span>
+            <div>
+              <div class="detalle-label">Tareas no entregadas</div>
+              <div class="detalle-val">{{ estudianteSel()!.riesgo!.detalles.tareasNoEntregadas }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="riesgo-recomendacion">
+          <strong style="display: flex; align-items: center; gap: 0.3rem;"><span class="material-symbols-rounded">lightbulb</span> Recomendación:</strong>
+          <p>{{ estudianteSel()!.riesgo!.recomendacion }}</p>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--primario" (click)="cerrarModal()">Entendido</button>
+      </div>
+    </div>
+  </div>
+}
+@if (modalEstado() === 'eliminar') {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal modal--sm" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h2 style="color:#dc2626"><span class="material-symbols-rounded">delete</span> Eliminar Estudiante</h2>
+          <p>Esta acción no se puede deshacer</p>
+        </div>
+        <button class="modal__close" (click)="cerrarModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <p>¿Estás seguro de eliminar a <strong>{{ getNombreCompleto(estudianteSel()!) }}</strong>?</p>
+        <p class="warning-text"><span class="material-symbols-rounded" style="vertical-align: bottom; font-size: 1.1rem;">warning</span> Se eliminarán también su asistencia y calificaciones.</p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secundario" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+        <button class="btn btn--peligro" (click)="eliminar()" [disabled]="guardando()">
+          <span class="material-symbols-rounded" *ngIf="!guardando()">delete</span>
+          {{ guardando() ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

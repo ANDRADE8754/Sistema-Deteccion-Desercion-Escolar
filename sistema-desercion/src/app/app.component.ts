@@ -1,28 +1,20 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
-
+import { ToastComponent } from './shared/components/toast/toast.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    NavbarComponent
-  ],
+  imports: [RouterOutlet, NavbarComponent, ToastComponent],
   template: `
-    <app-navbar></app-navbar>
-    <main class="contenedor">
-      <router-outlet></router-outlet>
-    </main>
+    <div class="app-shell">
+      <app-navbar />
+      <main class="page-content">
+        <router-outlet />
+      </main>
+      <app-toast />
+    </div>
   `,
-  styles: [`
-    .contenedor {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 24px 16px;
-    }
-  `]
+  styleUrl: './app.component.scss',
 })
-export class AppComponent {
-  title = 'sistema-desercion';
-}
+export class AppComponent {}

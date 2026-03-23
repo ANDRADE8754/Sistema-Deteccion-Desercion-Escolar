@@ -1,0 +1,167 @@
+<div class="page-header">
+  <div>
+    <h1><span class="material-symbols-rounded">menu_book</span> Mis Cursos</h1>
+    <p class="subtitulo">Gestiona todos tus cursos desde aquí</p>
+  </div>
+  <button class="btn btn--primario" (click)="abrirCrear()">
+    <span class="material-symbols-rounded">add</span> Nuevo Curso
+  </button>
+</div>
+@if (cargando()) {
+  <div class="loading-spinner">Cargando cursos...</div>
+}
+@if (!cargando()) {
+  @if (cursos().length === 0) {
+    <div class="estado-vacio">
+      <div class="vacio-icon"><span class="material-symbols-rounded" style="font-size: inherit;">library_books</span></div>
+      <p>No tienes cursos todavía</p>
+      <p>Crea tu primer curso para comenzar a gestionar estudiantes</p>
+    </div>
+  }
+  <div class="cursos-grid">
+    @for (curso of cursos(); track curso.id) {
+      <div class="curso-card">
+        <div class="curso-card__header">
+          <div class="curso-card__icon"><span class="material-symbols-rounded">auto_stories</span></div>
+          <div class="curso-card__meta">
+            <span class="curso-paralelo">Paralelo {{ curso.paralelo }}</span>
+            <span class="curso-anio">{{ curso.anioLectivo }}</span>
+          </div>
+        </div>
+        <h2 class="curso-card__nombre">{{ curso.nombre }}</h2>
+        <p class="curso-card__escuela"><span class="material-symbols-rounded" style="font-size: 1rem; color: #64748b;">account_balance</span> {{ curso.escuela }}</p>
+        @if (curso.descripcion) {
+          <p class="curso-card__desc">{{ curso.descripcion }}</p>
+        }
+        <div class="curso-card__stats">
+          <div class="stat-chip">
+            <span class="stat-chip__val">{{ curso.totalEstudiantes }}</span>
+            <span class="stat-chip__lbl">Estudiantes</span>
+          </div>
+        </div>
+        <div class="curso-card__actions">
+          <a [routerLink]="['/cursos', curso.id, 'estudiantes']"
+             class="btn btn--primario btn--pequeno">
+            Ver Curso →
+          </a>
+          <button class="btn btn--secundario btn--pequeno" (click)="abrirEditar(curso)">
+            <span class="material-symbols-rounded">edit</span> Editar
+          </button>
+          <button class="btn btn--peligro btn--pequeno" (click)="abrirEliminar(curso)">
+            <span class="material-symbols-rounded">delete</span> Eliminar
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+}
+@if (modalEstado() === 'crear' || modalEstado() === 'editar') {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h2>
+            <span class="material-symbols-rounded">{{ modalEstado() === 'crear' ? 'add_circle' : 'edit' }}</span>
+            {{ modalEstado() === 'crear' ? 'Nuevo Curso' : 'Editar Curso' }}
+          </h2>
+          <p>{{ modalEstado() === 'crear' ? 'Completa los datos del nuevo curso' : 'Modifica los datos del curso' }}</p>
+        </div>
+        <button class="modal__close" (click)="cerrarModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="campo">
+          <label>Nombre del Curso *</label>
+          <input type="text" [(ngModel)]="form.nombre"
+                 [class.input-error]="errores.nombre"
+                 (keydown)="filtrarNombreCurso($event)"
+                 (input)="sanitizarNombreCurso()"
+                 maxlength="60"
+                 autocomplete="off"
+                 placeholder="Ej: Matemáticas 5to Grado" />
+          @if (errores.nombre) { <span class="error-text">{{ errores.nombre }}</span> }
+        </div>
+        <div class="campo">
+          <label>Institución / Escuela *</label>
+          <input type="text" [(ngModel)]="form.escuela"
+                 [class.input-error]="errores.escuela"
+                 (keydown)="filtrarEscuela($event)"
+                 (input)="sanitizarEscuela()"
+                 maxlength="80"
+                 autocomplete="off"
+                 placeholder="Ej: Escuela Rural Simón Bolívar" />
+          @if (errores.escuela) { <span class="error-text">{{ errores.escuela }}</span> }
+        </div>
+        <div class="form-row">
+          <div class="campo">
+            <label>Año Lectivo *</label>
+            <input type="text" [(ngModel)]="form.anioLectivo"
+                   [class.input-error]="errores.anioLectivo"
+                   (keydown)="filtrarAnio($event)"
+                   (input)="sanitizarAnio()"
+                   maxlength="9"
+                   autocomplete="off"
+                   placeholder="Ej: 2024-2025" />
+            @if (errores.anioLectivo) { <span class="error-text">{{ errores.anioLectivo }}</span> }
+          </div>
+          <div class="campo">
+            <label>Paralelo *</label>
+            <input type="text" [(ngModel)]="form.paralelo"
+                   [class.input-error]="errores.paralelo"
+                   (keydown)="filtrarParalelo($event)"
+                   (input)="sanitizarParalelo()"
+                   maxlength="1"
+                   autocomplete="off"
+                   style="text-transform: uppercase;"
+                   placeholder="Ej: A" />
+            @if (errores.paralelo) { <span class="error-text">{{ errores.paralelo }}</span> }
+          </div>
+        </div>
+        <div class="campo">
+          <label>Descripción (opcional)</label>
+          <textarea [(ngModel)]="form.descripcion"
+                    (keydown)="filtrarDescripcion($event)"
+                    (input)="sanitizarDescripcion()"
+                    maxlength="300"
+                    placeholder="Notas adicionales sobre el curso..."></textarea>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secundario" (click)="cerrarModal()" [disabled]="guardando()">
+          Cancelar
+        </button>
+        <button class="btn btn--primario" (click)="guardar()" [disabled]="guardando()">
+          <span class="material-symbols-rounded" *ngIf="!guardando()">check</span>
+          {{ guardando() ? 'Guardando...' : (modalEstado() === 'crear' ? 'Crear Curso' : 'Guardar Cambios') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+@if (modalEstado() === 'confirmarEliminar') {
+  <div class="modal-backdrop" (click)="cerrarModal()">
+    <div class="modal modal--sm" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <div>
+          <h2 style="color: #dc2626"><span class="material-symbols-rounded">delete</span> Eliminar Curso</h2>
+          <p>Esta acción no se puede deshacer</p>
+        </div>
+        <button class="modal__close" (click)="cerrarModal()">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="confirm-msg">
+          <p>¿Estás seguro de que deseas eliminar el curso <strong>{{ cursoSel()?.nombre }}</strong>?</p>
+          <p class="warning-text"><span class="material-symbols-rounded" style="font-size: 1.1rem; vertical-align: bottom;">warning</span> Se eliminarán también todos los estudiantes, asistencias y calificaciones asociados.</p>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secundario" (click)="cerrarModal()" [disabled]="guardando()">
+          Cancelar
+        </button>
+        <button class="btn btn--peligro" (click)="eliminar()" [disabled]="guardando()">
+          <span class="material-symbols-rounded" *ngIf="!guardando()">delete</span>
+          {{ guardando() ? 'Eliminando...' : 'Sí, Eliminar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

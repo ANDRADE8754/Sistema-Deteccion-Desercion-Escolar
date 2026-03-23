@@ -1,0 +1,73 @@
+﻿node.exe : - 
+Building...
+En línea: 1 Carácter: 1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (- Building...   
+ :String) [], Remot    
+eException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+
+Initial chunk files   | Names                       |  Raw size | Estimated transfer size
+chunk-EDBQDLKW.js     | -                           | 220.52 kB |                60.78 kB
+polyfills-FFHMD2TL.js | polyfills                   |  33.71 kB |                11.02 kB
+styles-IVK23NZZ.css   | styles                      |  22.87 kB |                 3.24 kB
+main-2LTMCKVM.js      | main                        |   5.51 kB |                 1.75 kB
+chunk-F2ZIRGKX.js     | -                           | 603 bytes |               603 bytes
+
+                      | Initial total               | 283.21 kB |                77.36 kB
+
+Lazy chunk files      | Names                       |  Raw size | Estimated transfer size
+chunk-Q7SSMKIN.js     | -                           | 199.64 kB |                59.66 kB
+chunk-Y2M466K6.js     | -                           |  26.58 kB |                 5.63 kB
+chunk-EKQ4KOPK.js     | estudiantes-component       |  21.18 kB |                 5.43 kB
+chunk-ICAFVQDY.js     | calificaciones-component    |  18.05 kB |                 5.07 kB
+chunk-QASKGMUF.js     | cursos-component            |  16.45 kB |                 4.41 kB
+chunk-JIXBFBEY.js     | dashboard-general-component |  11.56 kB |                 3.50 kB
+chunk-7WEBKPMG.js     | asistencia-component        |  10.96 kB |                 3.27 kB
+chunk-NP6BMPPU.js     | dashboard-curso-component   |   9.58 kB |                 3.09 kB
+chunk-3REWZWHV.js     | -                           |   4.67 kB |                 1.62 kB
+chunk-JFKQRHD2.js     | curso-detalle-component     |   3.67 kB |                 1.39 kB
+chunk-OZKWCT47.js     | -                           |   2.81 kB |               867 bytes
+chunk-6QIIMDU3.js     | -                           |   2.05 kB |               663 bytes
+chunk-TS23NRKP.js     | -                           |   1.92 kB |               891 bytes
+chunk-KERQ5M23.js     | -                           |   1.33 kB |               515 bytes
+chunk-7PMROCUZ.js     | -                           | 945 bytes |               945 bytes
+
+Output location: C:\Users\Asus\Documents\UTA\Septimo\Desarrollo_Asistido_Software\Proyecto_Yura\sistema-desercion\dist\sistema-desercion
+
+Application bundle generation complete. [3.148 seconds]
+
+Ôû▓ [WARNING] src/app/f
+eatures/dashboard/dashb
+oard-general/dashboard-
+general.component.scss 
+exceeded maximum 
+budget. Budget 2.00 kB 
+was not met by 369 
+bytes with a total of 
+2.36 kB.
+
+
+Ôû▓ [WARNING] src/app/f
+eatures/asistencia/asis
+tencia.component.scss 
+exceeded maximum 
+budget. Budget 2.00 kB 
+was not met by 318 
+bytes with a total of 
+2.31 kB.
+
+
